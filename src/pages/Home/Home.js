@@ -1,5 +1,5 @@
 import React from 'react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { Button } from '../../components/ui/button'
 import { Card, CardContent } from '../../components/ui/card'
 import { Navbar } from '../../components/Navbar/Navbar'
@@ -50,9 +50,7 @@ export function Home() {
 
   return (
     <>
-      <AnimatePresence>
-        {!isHeroInView && <Navbar />}
-      </AnimatePresence>
+      <Navbar show={!isHeroInView} />
 
       <div ref={heroRef} className="relative min-h-screen">
         {/* Background Image with Overlay */}

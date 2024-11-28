@@ -1,6 +1,7 @@
 import React from 'react'
-import { motion } from 'framer-motion'
 import { Layout } from '../../components/Layout/Layout'
+import { Navbar } from '../../components/Navbar/Navbar'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 
 const menuCategories = [
   {
@@ -30,7 +31,8 @@ const menuCategories = [
 
 function MenuItem({ name, price, description }) {
   return (
-    <motion.div 
+    <>
+      <motion.div 
       className="border-b border-white/10 py-4"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -42,13 +44,14 @@ function MenuItem({ name, price, description }) {
         <span className="text-[#99FF33] ml-4">${price}</span>
       </div>
       <p className="text-white/60 mt-1">{description}</p>
-    </motion.div>
+    </motion.div></>
   )
 }
 
 export function Menu() {
   return (
-    <Layout>
+    <>
+            <Navbar show={true} />
       <div className="bg-black min-h-screen pt-32">
         <div className="container mx-auto px-4">
           <motion.h1 
@@ -81,6 +84,6 @@ export function Menu() {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   )
 } 

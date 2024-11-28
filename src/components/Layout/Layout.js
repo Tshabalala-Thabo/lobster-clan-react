@@ -1,7 +1,4 @@
 import React from 'react'
-import { AnimatePresence } from 'framer-motion'
-import { useInView } from 'framer-motion'
-import { Navbar } from '../Navbar/Navbar'
 
 export function Layout({ children }) {
   return (
