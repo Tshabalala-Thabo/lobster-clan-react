@@ -1,8 +1,26 @@
-import { motion } from 'framer-motion'
+import React from 'react'
+import { motion, useInView } from 'framer-motion'
 import { Button } from './components/ui/button'
 import { Card, CardContent } from './components/ui/card'
 
 function App() {
+  const sectionRef = React.useRef(null);
+  
+  // Check when approaching top of viewport
+  const isInViewTop = useInView(sectionRef, { 
+    margin: "-200px 0px 0px 0px",
+    once: false 
+  });
+
+  // Check when approaching bottom of viewport
+  const isInViewBottom = useInView(sectionRef, { 
+    margin: "0px 0px -200px 0px",
+    once: false 
+  });
+
+  // Section is considered "in view" only when both conditions are true
+  const isFullyInView = isInViewTop && isInViewBottom;
+
   return (
     <div className="relative min-h-screen w-full font-sans">
       {/* Hero Section */}
@@ -84,92 +102,133 @@ function App() {
       </div>
 
       {/* Welcome Section */}
-      <section className="container mx-auto px-4 py-12 grid md:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <h1 className="text-4xl font-serif">Welcome to the clan</h1>
-
-          <div className="space-y-4">
-            <h2 className="text-2xl font-serif text-[#99FF33]">Our philosophy</h2>
-            <p className="text-gray-300">
-              At Lobster Clan, we're passionate about delivering the perfect seafood experience. From ocean-fresh catches to exceptional service and a welcoming ambiance, every visit is a celebration of flavor and quality. We believe in crafting memorable dining moments, each dish prepared to perfection, just for you.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="text-2xl font-serif text-[#99FF33]">Our location</h2>
-            <p className="text-gray-300">
-              Our restaurant offers a cozy, coastal-inspired setting with both indoor comfort and outdoor charm. Whether you're dining under the stars or enjoying the warmth of our inviting interiors, Lobster Clan features the perfect ambiance for your dining pleasure.
-            </p>
-          </div>
+      <section className="mx-auto grid md:grid-cols-12 gap-8">
+        {/* Image Column - 4 columns wide */}
+        <div className="md:col-span-4 relative aspect-[3/4]">
+          <img
+            src="/images/elegant-healthy-food-composition-with-fish.jpg"
+            alt="Elegant food composition with fish and ingredients"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/60" />
         </div>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">Phone</h3>
-            <p className="text-[#99FF33]">071 234 5678</p>
+        {/* Content Column - 8 columns wide */}
+        <div className="flex w-full md:col-span-8 p-16 gap-8">
+          <div className="w-8/12 space-y-6">
+            <h1 className="text-4xl font-serif">Welcome to the clan</h1>
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif text-[#99FF33]">Our philosophy</h2>
+              <p className="text-gray-300">
+                At Lobster Clan, we're passionate about delivering the perfect seafood experience. From ocean-fresh catches to exceptional service and a welcoming ambiance, every visit is a celebration of flavor and quality. We believe in crafting memorable dining moments, each dish prepared to perfection, just for you.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif text-[#99FF33]">Our location</h2>
+              <p className="text-gray-300">
+                Our restaurant offers a cozy, coastal-inspired setting with both indoor comfort and outdoor charm. Whether you're dining under the stars or enjoying the warmth of our inviting interiors, Lobster Clan features the perfect ambiance for your dining pleasure.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">Location</h3>
-            <p className="text-[#99FF33]">123 street</p>
-            <p className="text-[#99FF33]">City name, 0134</p>
-          </div>
+          <div className="w-4/12 space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium">Phone</h3>
+              <p className="text-[#99FF33]">071 234 5678</p>
+            </div>
 
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">Hours</h3>
-            <p className="text-[#99FF33]">M-F 11am-2am</p>
-            <p className="text-[#99FF33]">Sa 10am-3am</p>
-            <p className="text-[#99FF33]">Su 10am-9pm</p>
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium">Location</h3>
+              <p className="text-[#99FF33]">123 street</p>
+              <p className="text-[#99FF33]">City name, 0134</p>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium">Hours</h3>
+              <p className="text-[#99FF33]">M-F 11am-2am</p>
+              <p className="text-[#99FF33]">Sa 10am-3am</p>
+              <p className="text-[#99FF33]">Su 10am-9pm</p>
+            </div>
           </div>
         </div>
       </section>
       {/* Menu Preview Section */}
-      <section className="grid md:grid-cols-3 gap-4 mb-8">
+      <section className="grid grid-cols-2 md:grid-cols-3">
         <MenuCard
-          imageSrc="/images/platters.jpg"
+          imageSrc="/images/side-view-seafood-plate-with-sauces.png"
           title="Seafood platters"
+          className="col-span-1"
         />
         <MenuCard
-          imageSrc="/images/lobster.jpg"
+          imageSrc="/images/view-cooked-prepared-crawfish.jpg"
           title="Lobster delights"
+          className="col-span-1"
         />
         <MenuCard
-          imageSrc="/images/grilled.jpg"
+          imageSrc="/images/side-view-fried-fish-with-knife-fork.png"
           title="Grilled catch of the day"
+          className="col-span-2 md:col-span-1"
         />
       </section>
 
       {/* Menu Button Section */}
-      <section className="bg-[#99FF33] py-8 relative">
-        <div className="container mx-auto px-4 flex justify-center items-center gap-8">
-          <image
-            src="/placeholder.svg"
-            alt="Lobster icon"
-            width={50}
-            height={50}
-            className="hidden md:block"
-          />
-          <button variant="secondary" size="lg">
+      <section ref={sectionRef} className="bg-[#99FF33] py-8 overflow-hidden relative">
+        <div className="container mx-auto px-4 flex justify-center items-center">
+          {/* Left lobster */}
+          <motion.div 
+            className="absolute left-1/4 bottom-0"
+            animate={{ 
+              y: isFullyInView ? "50%" : "100%" 
+            }}
+            transition={{ 
+              duration: 0.8,
+              ease: "easeOut"
+            }}
+          >
+            <img
+              src="/images/lobster.svg"
+              alt="Lobster icon"
+              width={50}
+              height={50}
+              className="h-56 w-auto"
+            />
+          </motion.div>
+          
+          <button variant="secondary" className="text-white bg-black px-8 py-4" size="lg">
             Full menu
           </button>
-          <image
-            src="/placeholder.svg"
-            alt="Lobster icon"
-            width={50}
-            height={50}
-            className="hidden md:block"
-          />
+          
+          {/* Right lobster */}
+          <motion.div 
+            className="absolute right-1/4 bottom-0"
+            animate={{ 
+              y: isFullyInView ? "50%" : "100%" 
+            }}
+            transition={{ 
+              duration: 0.8,
+              ease: "easeOut"
+            }}
+          >
+            <img
+              src="/images/lobster.svg"
+              alt="Lobster icon"
+              width={50}
+              height={50}
+              className="h-56 w-auto"
+            />
+          </motion.div>
         </div>
       </section>
 
       {/* Chef Section */}
       <section className="grid md:grid-cols-2 gap-8 py-16 container mx-auto px-4">
         <div className="relative aspect-video md:aspect-square">
-          <image
+          <img
             src="/placeholder.svg"
             alt="Chef preparing food"
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
         <div className="space-y-6 flex flex-col justify-center">
@@ -197,11 +256,10 @@ function App() {
           </Button>
         </div>
         <div className="relative aspect-video md:aspect-square">
-          <image
+          <img
             src="/placeholder.svg"
             alt="Restaurant interior"
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
       </section>
@@ -241,17 +299,17 @@ function App() {
 }
 
 // Helper component for menu cards
-function MenuCard({ imageSrc, title }) {
+function MenuCard({ imageSrc, title, className }) {
   return (
-    <Card className="bg-black border-none">
-      <CardContent className="p-0 relative aspect-video">
+    <Card className={`bg-black border-none ${className}`}>
+      <CardContent className="p-0 relative h-[150px] md:h-auto md:aspect-video">
         <img
           src={imageSrc}
           alt={title}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-          <h3 className="text-2xl font-serif text-white">{title}</h3>
+          <h3 className="text-2xl text-white">{title}</h3>
         </div>
       </CardContent>
     </Card>
