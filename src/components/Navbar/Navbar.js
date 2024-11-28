@@ -30,6 +30,7 @@ export function Navbar({ show = true }) {
             </div>
 
             <div className="hidden md:flex h-full relative items-center gap-8">
+              <a href="/" className="text-white/80 hover:text-white transition-colors">Home</a>
               <a href="/menu" className="text-white/80 hover:text-white transition-colors">Menu</a>
               <a href="#about" className="text-white/80 hover:text-white transition-colors">About</a>
               <a href="#location" className="text-white/80 hover:text-white transition-colors">Location</a>
