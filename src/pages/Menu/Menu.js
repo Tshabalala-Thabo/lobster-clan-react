@@ -25,7 +25,7 @@ const menuCategories = [
   },
   {
     title: 'Signature Dishes',
-    image: '/images/side-view-seafood-plate-with-sauces.png.jpg',
+    image: '/images/side-view-seafood-plate-with-sauces.png',
     items: [
       { name: "Seafood Platter for Two", description: "A mix of prawns, mussels, calamari, grilled fish, and lobster", price: 850 },
       { name: "Grilled Catch of the Day", description: "Seasonal fresh fish, grilled and served with roasted vegetables", price: 220 },
@@ -78,7 +78,7 @@ function MenuItem({ name, price, description }) {
       transition={{ duration: 0.5 }}
     >
       <div className="flex justify-between items-baseline">
-        <h3 className="text-xl font-playfair font-semibold text-stone-900">{name}</h3>
+        <h3 className="text-xl font-semibold text-stone-900">{name}</h3>
         <span className="text-stone-600 font-semibold ml-4">R{price}</span>
       </div>
       <p className="text-stone-500 mt-1 text-sm">{description}</p>
@@ -101,7 +101,7 @@ function MenuSection({ title, items, image }) {
           alt={title} 
           className="w-full h-full object-cover"
         />
-        <h2 className="font-playfair text-4xl text-white absolute bottom-4 left-4 drop-shadow-lg">
+        <h2 className="text-4xl text-white absolute bottom-4 left-4 drop-shadow-lg">
           {title}
         </h2>
       </div>
@@ -118,7 +118,7 @@ function TabButton({ title, isActive, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`px-6 py-3 text-lg font-playfair transition-colors relative
+      className={`px-6 py-3 text-lg transition-colors relative
         ${isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
     >
       {title}
@@ -139,7 +139,7 @@ export function Menu() {
   return (
     <div className="min-h-screen bg-stone-50">
       <Navbar show={true} />
-      <div className="max-w-6xl mx-auto bg-white mt-32">
+      <div className="max-w-6xl mx-auto mt-32">
         <div className="border-b">
           <div className="flex justify-center space-x-4 px-8">
             {menuCategories.map((category, index) => (
@@ -164,9 +164,9 @@ export function Menu() {
           </AnimatePresence>
         </div>
         
-        <footer className="bg-stone-900 text-white p-6 text-center">
+        <div className="bg-stone-900 text-white p-6 text-center">
           <p className="text-stone-300">• All seafood is sourced sustainably</p>
-        </footer>
+        </div>
       </div>
     </div>
   )
