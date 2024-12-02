@@ -10,10 +10,9 @@ export function Layout({ children }) {
           <div>
             <h4 className="text-[#99FF33] text-xl font-serif italic mb-4">Quick links</h4>
             <nav className="space-y-2">
-              <a href="#" className="block text-gray-300 hover:text-white">Menu</a>
-              <a href="#" className="block text-gray-300 hover:text-white">Location</a>
-              <a href="#" className="block text-gray-300 hover:text-white">Hours</a>
-              <a href="#" className="block text-gray-300 hover:text-white">Contacts</a>
+              <a href="/menu" className="block text-gray-300 hover:text-white">Menu</a>
+              <a href="/" className="block text-gray-300 hover:text-white">Hours</a>
+              <a href="/" className="block text-gray-300 hover:text-white">Contacts</a>
             </nav>
           </div>
           <div>
