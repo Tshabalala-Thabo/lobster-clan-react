@@ -132,7 +132,7 @@ export function Home() {
       {/* Welcome Section */}
       <section className="mx-auto grid md:grid-cols-12 gap-8">
         {/* Image Column - 4 columns wide */}
-        <div className="md:col-span-4 relative aspect-[3/4]">
+        <div className="hidden md:block md:col-span-4 relative">
           <img
             src="/images/elegant-healthy-food-composition-with-fish.jpg"
             alt="Elegant food composition with fish and ingredients"
