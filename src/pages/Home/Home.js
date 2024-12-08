@@ -142,26 +142,26 @@ export function Home() {
         </div>
 
         {/* Content Column - 8 columns wide */}
-        <div className="flex w-full md:col-span-8 p-16 gap-8">
-          <div className="w-8/12 space-y-6">
-            <h1 className="text-4xl font-serif">Welcome to the clan</h1>
+        <div className="flex w-full md:col-span-8 p-4 md:p-16 flex-col md:flex-row gap-8">
+          <div className="w-full md:w-8/12 space-y-6">
+            <h1 className="text-3xl md:text-4xl font-serif">Welcome to the clan</h1>
 
             <div className="space-y-4">
-              <h2 className="text-2xl font-serif text-[#E53D10]">Our philosophy</h2>
+              <h2 className="text-xl md:text-2xl font-serif text-[#E53D10]">Our philosophy</h2>
               <p className="opacity-70">
                 At Lobster Clan, we're passionate about delivering the perfect seafood experience. From ocean-fresh catches to exceptional service and a welcoming ambiance, every visit is a celebration of flavor and quality. We believe in crafting memorable dining moments, each dish prepared to perfection, just for you.
               </p>
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-2xl font-serif text-[#E53D10]">Our location</h2>
+              <h2 className="text-xl md:text-2xl font-serif text-[#E53D10]">Our location</h2>
               <p className="opacity-70">
                 Our restaurant offers a cozy, coastal-inspired setting with both indoor comfort and outdoor charm. Whether you're dining under the stars or enjoying the warmth of our inviting interiors, Lobster Clan features the perfect ambiance for your dining pleasure.
               </p>
             </div>
           </div>
 
-          <div className="w-4/12 space-y-4">
+          <div className="w-full md:w-4/12 space-y-4 bg-gray-50 p-4 md:p-0">
             <div className="space-y-2">
               <h3 className="text-lg font-medium">Phone</h3>
               <p className="text-[#539C00]">071 234 5678</p>
