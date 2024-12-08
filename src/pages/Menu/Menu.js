@@ -137,7 +137,7 @@ export function Menu() {
   const [activeCategory, setActiveCategory] = useState(0)
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="bg-stone-50">
       <Navbar show={true} />
       <div className="max-w-6xl mx-auto mt-32">
         <div className="border-b">
@@ -164,8 +164,8 @@ export function Menu() {
           </AnimatePresence>
         </div>
         
-        <div className="bg-stone-900 text-white p-6 text-center">
-          <p className="text-stone-300">• All seafood is sourced sustainably</p>
+        <div className="text-black p-6 text-center">
+          <p className="opacity-70">• All seafood is sourced sustainably</p>
         </div>
       </div>
     </div>
