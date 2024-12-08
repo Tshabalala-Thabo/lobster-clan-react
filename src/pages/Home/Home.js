@@ -130,19 +130,19 @@ export function Home() {
       </div>
 
       {/* Welcome Section */}
-      <section className="mx-auto grid md:grid-cols-12 gap-8">
-        {/* Image Column - 4 columns wide */}
-        <div className="hidden md:block md:col-span-4 relative">
+      <section className="mx-auto flex flex-col md:flex-row min-h-[500px]">
+        {/* Image Column */}
+        <div className="hidden md:block md:w-1/3 relative">
           <img
             src="/images/elegant-healthy-food-composition-with-fish.jpg"
             alt="Elegant food composition with fish and ingredients"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover absolute inset-0"
           />
           <div className="absolute inset-0 bg-black/60" />
         </div>
 
-        {/* Content Column - 8 columns wide */}
-        <div className="flex w-full md:col-span-8 p-4 md:p-16 flex-col md:flex-row gap-8">
+        {/* Content Column */}
+        <div className="flex w-full md:w-2/3 p-4 md:p-16 flex-col md:flex-row gap-8">
           <div className="w-full md:w-8/12 space-y-6">
             <h1 className="text-3xl md:text-4xl font-serif">Welcome to the clan</h1>
 
@@ -252,15 +252,15 @@ export function Home() {
       </section>
 
       {/* Chef Section */}
-      <section className="grid md:grid-cols-2 mx-auto bg-[#111]">
-        <div className="relative aspect-video md:aspect-square">
+      <section className="flex flex-col md:flex-row mx-auto bg-[#111] min-h-[500px]">
+        <div className="w-full md:w-1/2 relative aspect-video md:aspect-auto md:min-h-[500px]">
           <img
             src="/images/chef-cooking-kitchen-while-wearing-professional-attire.jpg"
             alt="Chef preparing food"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover absolute inset-0"
           />
         </div>
-        <div className="space-y-6 flex flex-col p-16 justify-center">
+        <div className="w-full md:w-1/2 space-y-6 flex flex-col p-8 md:p-16 justify-center min-h-[500px]">
           <h2 className="text-2xl font-marck italic text-[#99FF33]">Chef in house explains</h2>
           <h3 className="text-3xl text-white">Crafting Perfection, One Dish at a Time</h3>
           <p className="opacity-70 text-white">
@@ -273,8 +273,8 @@ export function Home() {
       </section>
 
       {/* Interior Section */}
-      <section className="grid md:grid-cols-2 mx-auto bg-[#111]">
-        <div className="space-y-6 flex flex-col p-16 justify-center">
+      <section className="flex flex-col-reverse md:flex-row  mx-auto bg-[#111] min-h-[500px]">
+        <div className="w-full md:w-1/2 space-y-6 flex flex-col p-8 md:p-16 justify-center min-h-[500px]">
           <h2 className="text-2xl font-marck italic text-[#99FF33]">Feel yourself as a valued guest</h2>
           <h3 className="text-3xl text-white">Cozy Atmosphere, Unforgettable Moments</h3>
           <p className="opacity-70 text-white">
@@ -284,11 +284,11 @@ export function Home() {
             See interior photos
           </Button>
         </div>
-        <div className="relative aspect-video md:aspect-square">
+        <div className="w-full md:w-1/2 relative aspect-video md:aspect-auto md:min-h-[500px]">
           <img
             src="/images/cutlery-setting-restaurant.png"
             alt="Restaurant interior"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover absolute inset-0"
           />
         </div>
       </section>
