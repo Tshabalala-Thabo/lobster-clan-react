@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Navbar } from '../../components/Navbar/Navbar'
+import { Navbar } from '../components/Navbar'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const menuCategories = [

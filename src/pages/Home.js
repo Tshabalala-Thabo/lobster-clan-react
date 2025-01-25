@@ -1,8 +1,8 @@
 import React from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Button } from '../../components/ui/button'
-import { Card, CardContent } from '../../components/ui/card'
-import { Navbar } from '../../components/Navbar/Navbar'
+import { Button } from '../components/ui/button'
+import { Card, CardContent } from '../components/ui/card'
+import { Navbar } from '../components/Navbar'
 
 // Helper component for menu cards
 function MenuCard({ imageSrc, title, className }) {

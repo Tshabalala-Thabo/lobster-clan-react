@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Button } from '../ui/button'
+import { Button } from './ui/button'
 
 export function Navbar({ show }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
