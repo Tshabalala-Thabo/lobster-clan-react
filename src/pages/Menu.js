@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Navbar } from '../components/Navbar'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -68,6 +68,25 @@ const menuCategories = [
   }
 ]
 
+function TabButton({ title, isActive, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-6 py-3 text-lg transition-colors relative whitespace-nowrap
+        ${isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
+    >
+      {title}
+      {isActive && (
+        <motion.div
+          layoutId="activeTab"
+          className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900"
+          initial={false}
+        />
+      )}
+    </button>
+  );
+}
+
 function MenuItem({ name, price, description }) {
   return (
     <motion.div 
@@ -83,7 +102,7 @@ function MenuItem({ name, price, description }) {
       </div>
       <p className="text-stone-500 mt-1 text-sm">{description}</p>
     </motion.div>
-  )
+  );
 }
 
 function MenuSection({ title, items, image }) {
@@ -111,63 +130,84 @@ function MenuSection({ title, items, image }) {
         ))}
       </div>
     </motion.section>
-  )
-}
-
-function TabButton({ title, isActive, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-6 py-3 text-lg transition-colors relative
-        ${isActive ? 'text-stone-900' : 'text-stone-500 hover:text-stone-700'}`}
-    >
-      {title}
-      {isActive && (
-        <motion.div
-          layoutId="activeTab"
-          className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900"
-          initial={false}
-        />
-      )}
-    </button>
-  )
+  );
 }
 
 export function Menu() {
-  const [activeCategory, setActiveCategory] = useState(0)
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(0); // Add this line
+
+  // Check screen size and update state
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // Adjust breakpoint as needed
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="bg-stone-50">
       <Navbar show={true} />
-      <div className="max-w-6xl mx-auto mt-32">
-        <div className="border-b">
-          <div className="flex justify-center space-x-4 px-8">
+      <div className="container mx-auto mt-32">
+        {isMobile ? (
+          // Vertical layout for mobile
+          <div className="space-y-12 px-4">
             {menuCategories.map((category, index) => (
-              <TabButton
-                key={category.title}
-                title={category.title}
-                isActive={activeCategory === index}
-                onClick={() => setActiveCategory(index)}
-              />
+              <div key={category.title}>
+                <div className="relative h-64 overflow-hidden">
+                  <img 
+                    src={category.image} 
+                    alt={category.title} 
+                    className="w-full h-full object-cover"
+                  />
+                  <h2 className="text-4xl text-white absolute bottom-4 left-4 drop-shadow-lg">
+                    {category.title}
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 gap-x-8 mt-8">
+                  {category.items.map((item) => (
+                    <MenuItem key={item.name} {...item} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        ) : (
+          // Tabbed layout for larger screens
+          <>
+            <div className="border-b mb-4">
+              <div className="flex justify-center space-x-4">
+                {menuCategories.map((category, index) => (
+                  <TabButton
+                    key={category.title}
+                    title={category.title}
+                    isActive={activeCategory === index}
+                    onClick={() => setActiveCategory(index)}
+                  />
+                ))}
+              </div>
+            </div>
 
-        <div className="p-8">
-          <AnimatePresence mode="wait">
-            <MenuSection 
-              key={menuCategories[activeCategory].title}
-              title={menuCategories[activeCategory].title}
-              items={menuCategories[activeCategory].items}
-              image={menuCategories[activeCategory].image}
-            />
-          </AnimatePresence>
-        </div>
-        
+            <div className="px-4">
+              <AnimatePresence mode="wait">
+                <MenuSection 
+                  key={menuCategories[activeCategory].title}
+                  title={menuCategories[activeCategory].title}
+                  items={menuCategories[activeCategory].items}
+                  image={menuCategories[activeCategory].image}
+                />
+              </AnimatePresence>
+            </div>
+          </>
+        )}
+
         <div className="text-black p-6 text-center">
           <p className="opacity-70">• All seafood is sourced sustainably</p>
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}
