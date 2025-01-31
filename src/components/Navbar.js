@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Button } from './ui/button'
+import { useBookingStore } from './Layout'
 
 export function Navbar({ show }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const openBookingModal = useBookingStore((state) => state.openBookingModal)
 
   return (
     <AnimatePresence>
@@ -16,7 +18,12 @@ export function Navbar({ show }) {
           transition={{ duration: 0.3 }}
         >
           <div className="container mx-auto px-4 flex items-center justify-end">
-            <Button className="rounded-none px-2 text-md font-regular py-1" variant="destructive" size="sm">
+            <Button 
+              className="rounded-none px-2 text-md font-regular py-1" 
+              variant="destructive" 
+              size="sm"
+              onClick={openBookingModal}
+            >
               Book a table
             </Button>
           </div>
@@ -35,6 +42,9 @@ export function Navbar({ show }) {
             <div className="hidden md:flex h-full relative items-center gap-8">
               <a href="/" className="text-white/80 hover:text-white transition-colors">Home</a>
               <a href="/menu" className="text-white/80 hover:text-white transition-colors">Menu</a>
+              <a href="/chefs" className="text-white/80 hover:text-white transition-colors">Our Chefs</a>
+              <a href="/about" className="text-white/80 hover:text-white transition-colors">About</a>
+              <a href="/contact" className="text-white/80 hover:text-white transition-colors">Contact</a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -76,18 +86,25 @@ export function Navbar({ show }) {
                       Menu
                     </a>
                     <a 
-                      href="#about" 
+                      href="/chefs" 
+                      className="text-white/80 hover:text-white transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Our Chefs
+                    </a>
+                    <a 
+                      href="/about" 
                       className="text-white/80 hover:text-white transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       About
                     </a>
                     <a 
-                      href="#location" 
+                      href="/contact" 
                       className="text-white/80 hover:text-white transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Location
+                      Contact
                     </a>
                   </div>
                 </motion.div>
