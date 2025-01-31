@@ -11,6 +11,7 @@
     "dependencies": {
         "dotenv": "^8.6.0",
         "express": "^4.21.2",
+        "migrate-mongo": "^12.1.2",
         "mongoose": "^5.13.23"
     },
     "devDependencies": {
