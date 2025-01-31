@@ -1,0 +1,21 @@
+{
+    "name": "lobster-clan-backend",
+    "version": "1.0.0",
+    "description": "Backend for Lobster Clan reservation system",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "dependencies": {
+        "dotenv": "^8.6.0",
+        "express": "^4.21.2",
+        "mongoose": "^5.13.23"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.22"
+    },
+    "author": "Your Name",
+    "license": "ISC"
+}
