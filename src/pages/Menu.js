@@ -135,23 +135,43 @@ function MenuSection({ title, items, image }) {
 
 export function Menu() {
   const [isMobile, setIsMobile] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(0); // Add this line
+  const [activeCategory, setActiveCategory] = useState(0);
 
-  // Check screen size and update state
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); // Adjust breakpoint as needed
+      setIsMobile(window.innerWidth < 768);
     };
 
-    handleResize(); // Initial check
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <div className="bg-stone-50">
-      <Navbar show={true} />
-      <div className="container mx-auto mt-32">
+    <div className="bg-stone-50 pt-40">
+      <div className="relative overflow-hidden">
+        <div className="text-black" />
+        <div className="flex flex-col items-center justify-center mb-4 text-center">
+          <motion.h1 
+            className="text-4xl md:text-5xl font-protest text-stone-900 text-center mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Our Menu
+          </motion.h1>
+          <motion.p
+            className="text-black/90 max-w-2xl mx-auto px-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            Discover our selection of fresh seafood dishes, prepared with passion and expertise by our talented chefs.
+          </motion.p>
+        </div>
+      </div>
+
+      <div className="container mx-auto">
         {isMobile ? (
           // Vertical layout for mobile
           <div className="space-y-12 px-4">
