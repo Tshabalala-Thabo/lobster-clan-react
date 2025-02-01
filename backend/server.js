@@ -12,6 +12,11 @@ connectDB();
 // Middleware
 app.use(express.json());
 
+// Welcome Route
+app.get('/', (req, res) => {
+  res.send('Hello, welcome to the backend ;)');
+});
+
 // Routes
 app.use('/api', reservationRoutes);
 

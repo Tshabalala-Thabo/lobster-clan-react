@@ -1,5 +1,10 @@
 export const validateManualSelection = (availableTables, selectedTableIds, guests) => {
   const selectedTables = availableTables.filter(table => selectedTableIds.includes(table.tableId));
+  console.log("available filtered ", selectedTables)
+  if (selectedTables.length === 0) {
+    return { valid: false, message: 'Selected tables are not available for the selected time.' };
+  }
+
   const totalSeats = selectedTables.reduce((sum, table) => sum + table.seats, 0);
 
   if (totalSeats < guests) {
