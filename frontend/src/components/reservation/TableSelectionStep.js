@@ -1,4 +1,3 @@
-// components/TableSelectionStep.js
 import React from "react";
 
 const tables = [
@@ -45,37 +44,45 @@ export default function TableSelectionStep({ selectedTables, setSelectedTables, 
   }, 0);
 
   return (
-    <div style={{ width: "100%", maxWidth: "800px", margin: "0 auto", border: "1px solid #ccc", borderRadius: "8px" }}>
-      <div style={{ padding: "16px", borderBottom: "1px solid #ccc" }}>
-        <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>Table Selection</h2>
+    <div className="w-full mx-auto">
+      <div className="p-4 border-b border-gray-300">
+        <h2 className="text-2xl font-bold">Table Selection</h2>
       </div>
-      <div style={{ padding: "16px" }}>
-        <div style={{ marginBottom: "16px", fontSize: "18px", fontWeight: "600" }}>
+      <div className="p-4">
+        <div className="mb-4 text-xl font-semibold">
           Number of Guests: {TOTAL_GUESTS}
         </div>
-        {Object.entries(groupedTables).map(([description, tables]) => (
-          <div key={description} style={{ marginBottom: "24px" }}>
-            <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "8px" }}>{description}</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
-              {tables.map((table) => (
-                <label
-                  key={table.tableId}
-                  style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedTables.includes(table.tableId)}
-                    onChange={() => handleTableSelection(table.tableId)}
-                  />
-                  <span>
-                    Table {table.tableId} ({table.seats} seats)
-                  </span>
-                </label>
-              ))}
+        <div className="grid grid-cols-2 gap-6">
+          {Object.entries(groupedTables).map(([description, tables]) => (
+            <div
+              key={description}
+              className={`${
+                tables.length === 1 ? "col-span-1" : "col-span-2"
+              } border border-gray-300 p-4 mb-6`}
+            >
+              <h3 className="text-lg font-semibold mb-2">{description}</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {tables.map((table) => (
+                  <label
+                    key={table.tableId}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedTables.includes(table.tableId)}
+                      onChange={() => handleTableSelection(table.tableId)}
+                      className="h-4 w-4"
+                    />
+                    <span>
+                      Table {table.tableId} ({table.seats} seats)
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-        <div style={{ marginTop: "16px", fontWeight: "600" }}>
+          ))}
+        </div>
+        <div className="mt-4 font-semibold">
           Total Seats Selected: {totalSeats} / {TOTAL_GUESTS}
         </div>
       </div>
