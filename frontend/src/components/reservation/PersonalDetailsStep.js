@@ -1,4 +1,3 @@
-// components/PersonalDetailsStep.js
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -9,7 +8,7 @@ export default function PersonalDetailsStep() {
   } = useFormContext();
 
   return (
-    <>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Name */}
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-stone-700 mb-1">
@@ -67,6 +66,6 @@ export default function PersonalDetailsStep() {
         />
         {errors.guests && <p className="text-red-500 text-sm mt-1">{errors.guests.message}</p>}
       </div>
-    </>
+    </div>
   );
 }

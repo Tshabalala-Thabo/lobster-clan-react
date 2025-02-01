@@ -52,16 +52,16 @@ export default function TableSelectionStep({ selectedTables, setSelectedTables, 
         <div className="mb-4 text-xl font-semibold">
           Number of Guests: {TOTAL_GUESTS}
         </div>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Object.entries(groupedTables).map(([description, tables]) => (
             <div
               key={description}
               className={`${
-                tables.length === 1 ? "col-span-1" : "col-span-2"
+                tables.length < 5 ? "lg:col-span-1" : "lg:col-span-2"
               } border border-gray-300 p-4 mb-6`}
             >
               <h3 className="text-lg font-semibold mb-2">{description}</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {tables.map((table) => (
                   <label
                     key={table.tableId}
