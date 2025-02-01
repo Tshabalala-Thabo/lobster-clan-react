@@ -6,6 +6,7 @@ import { Menu } from './pages/Menu'
 import Chefs from './pages/Chefs'
 import { Contact } from './pages/Contact'
 import { About } from './pages/About'
+import { Reserve } from './pages/Reserve'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/chefs" element={<Chefs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
+          <Route path="/reserve" element={<Reserve />} />
         </Routes>
       </Layout>
     </Router>

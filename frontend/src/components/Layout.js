@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom'
 import { Navbar } from './Navbar'
 import { BookingModal } from './BookingModal'
 import { create } from 'zustand'
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Create a store for managing the booking modal state
 export const useBookingStore = create((set) => ({
@@ -78,6 +80,7 @@ export function Layout({ children }) {
           <p>&copy; {new Date().getFullYear()} Lobster Clan. All rights reserved.</p>
         </div>
       </footer>
+      <ToastContainer/>
     </div>
   )
 } 
