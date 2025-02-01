@@ -1,4 +1,4 @@
-// components/ReservationForm.js
+// components/reservation/ReservationForm.js
 import React, { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -7,9 +7,10 @@ import PersonalDetailsStep from "./PersonalDetailsStep";
 import DateTimeStep from "./DateTimeStep";
 import TableSelectionStep from "./TableSelectionStep";
 import ConfirmationStep from "./ConfirmationStep";
+import SuccessStep from "./SuccessStep";
 import FormActions from "./FormActions";
 
-export default function ReservationForm() {
+export default function ReservationForm({ onReservationSuccess }) {
   const methods = useForm();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ export default function ReservationForm() {
   const guests = methods.watch("guests");
 
   const onSubmit = async (data) => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setLoading(true);
       setTimeout(() => {
         setCurrentStep((prev) => prev + 1);
@@ -32,14 +33,20 @@ export default function ReservationForm() {
       // Handle final submission
       console.log("Reservation Data:", { ...data, selectedTables });
       toast.success("Reservation confirmed!");
-      // Reset form
-      methods.reset();
-      setSelectedDate(null);
-      setStartTime(null);
-      setDuration(30);
-      setSelectedTables([]);
-      setCurrentStep(1); // Reset to the first step
+      // Notify the parent component (Reserve) that the reservation is successful
+      onReservationSuccess(true);
     }
+  };
+
+  const handleReset = () => {
+    // Reset all form and state values
+    methods.reset();
+    setSelectedDate(null);
+    setStartTime(null);
+    setDuration(30);
+    setSelectedTables([]);
+    setCurrentStep(1); // Reset to the first step
+    onReservationSuccess(false); // Notify the parent component to show the heading and paragraph
   };
 
   const isNextDisabled =
@@ -81,15 +88,26 @@ export default function ReservationForm() {
             selectedTables={selectedTables}
           />
         )}
-        <FormActions
-          currentStep={currentStep}
-          totalSteps={4} // Total steps is now 4
-          onNext={() => setCurrentStep((prev) => prev + 1)}
-          onBack={() => setCurrentStep((prev) => prev - 1)}
-          onSubmit={methods.handleSubmit(onSubmit)}
-          isNextDisabled={isNextDisabled}
-          isSubmitDisabled={false} // No need to disable submit in TableSelectionStep
-        />
+        {!loading && currentStep === 5 && (
+          <SuccessStep
+            selectedDate={selectedDate}
+            startTime={startTime}
+            duration={duration}
+            selectedTables={selectedTables}
+            onReset={handleReset} // Pass the reset function
+          />
+        )}
+        {currentStep < 5 && (
+          <FormActions
+            currentStep={currentStep}
+            totalSteps={5} // Total steps is now 5
+            onNext={() => setCurrentStep((prev) => prev + 1)}
+            onBack={() => setCurrentStep((prev) => prev - 1)}
+            onSubmit={methods.handleSubmit(onSubmit)}
+            isNextDisabled={isNextDisabled}
+            isSubmitDisabled={false} // No need to disable submit in TableSelectionStep
+          />
+        )}
       </form>
     </FormProvider>
   );
