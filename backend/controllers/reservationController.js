@@ -1,131 +1,75 @@
 import Reservation from '../models/Reservation.js';
 import Table from '../models/Table.js';
-import { validateManualSelection, suggestBestCombination } from '../utils/reservationUtils.js';
 
-// Utility function for checking availability
-const checkTableAvailability = async (date) => {
-  // Fetch all reservations for the given date
-  const reservations = await Reservation.find({ date: new Date(date) });
-  const reservedTableIds = reservations.flatMap(res => res.tableIds);
+export const getReservations = async (req, res) => {
+  try {
+    // Calculate the start and end of the next 7 days
+    const now = new Date();
+    const sevenDaysLater = new Date(now);
+    sevenDaysLater.setDate(now.getDate() + 7);
 
-  // Fetch all tables and filter available ones
-  const allTables = await Table.find();
-  return allTables.filter(table => !reservedTableIds.includes(table.tableId));
+    // Fetch all reservations within the next 7 days
+    const reservations = await Reservation.find({
+      date: { $gte: now, $lte: sevenDaysLater },
+    }).select('-name -email -phone -createdAt -updatedAt -__v'); // Exclude personal information
+
+    // Fetch all tables
+    const allTables = await Table.find();
+
+    // Map reservations to include table details
+    const reservationsWithTableDetails = reservations.map((reservation) => {
+      const tableDetails = reservation.tableIds.map((tableId) =>
+        allTables.find((table) => table.tableId === tableId)
+      );
+
+      return {
+        ...reservation.toObject(),
+        tableDetails,
+      };
+    });
+
+    // Respond with data and a success message
+    res.json({
+      message: 'Reservations fetched successfully',
+      data: reservationsWithTableDetails,
+    });
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 export const createReservation = async (req, res) => {
-  //console.log('Request body:', req.body);
   const { name, email, phone, date, guests, tableIds } = req.body;
 
   try {
-    // Fetch available tables for the selected time slot using the utility function
-    const availableTables = await checkTableAvailability(date);
+    // Parse the date and calculate the end time (assuming 30-minute slots)
+    const startTime = new Date(date);
+    const endTime = new Date(startTime);
+    endTime.setMinutes(startTime.getMinutes() + 30);
 
-    // If tableIds are provided, validate manual selection
-    if (tableIds && tableIds.length > 0) {
-      const validation = validateManualSelection(availableTables, tableIds, guests);
-      if (!validation.valid) {
-        return res.status(400).send(validation.message);
-      }
-    } else {
-      // Suggest the best combination
-      const suggestedTableIds = suggestBestCombination(availableTables, guests);
-      if (!suggestedTableIds) {
-        return res.status(400).send('No available tables for the requested time and guests.');
-      }
-      tableIds = suggestedTableIds;
+    // Check if tables are available for the requested time slot
+    const overlappingReservations = await Reservation.find({
+      tableIds: { $in: tableIds }, // Check if any of the selected tables are reserved
+      $or: [
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }, // Overlapping condition
+      ],
+    });
+
+    if (overlappingReservations.length > 0) {
+      return res.status(400).json({ error: 'One or more selected tables are not available for the requested time slot.' });
     }
 
     // Create reservation
-    const reservation = new Reservation({ name, email, phone, date, guests, tableIds });
+    const reservation = new Reservation({ name, email, phone, date: startTime, guests, tableIds });
     await reservation.save();
 
-    res.send({ message: 'Reservation successful', tableIds });
-  } catch (error) {
-    res.status(500).send('Server error: ' + error.message);
-  }
-}; 
-
-export const checkAvailability = async (req, res) => {
-  const { date, guests } = req.body;
-
-  try {
-    // Use the utility function
-    const availableTables = await checkTableAvailability(date);
-    
-    // Check if there are enough seats across all available tables
-    const totalAvailableSeats = availableTables.reduce((sum, table) => sum + table.seats, 0);
-
-    if (totalAvailableSeats < guests) {
-      return res.status(400).json({
-        message: 'Not enough tables available',
-        availableTables,
-      });
-    }
-
-    // Suggest the best table combination
-    let suggestedCombination = suggestBestCombination(availableTables, guests);
-
-    if (!suggestedCombination) {
-      // Fallback: Use the smallest available table
-      if (availableTables.length > 0) {
-        suggestedCombination = [availableTables[0].tableId];
-      } else {
-        return res.status(400).json({
-          message: 'No tables available',
-        });
-      }
-    }
-
+    // Respond with data and a success message
     res.json({
-      message: 'Tables available',
-      suggestedCombination,
-      availableTables,
+      message: 'Reservation successful',
+      data: { tableIds },
     });
   } catch (error) {
-    console.error('Error checking availability:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ error: 'Server error: ' + error.message });
   }
 };
-
-// Function to suggest the best table combination
-// const suggestBestCombination = (availableTables, guests) => {
-//   availableTables.sort((a, b) => a.seats - b.seats); // Sort by seats ascending
-
-//   let bestCombination = null;
-//   let minWaste = Infinity;
-//   let minTables = Infinity;
-
-//   const backtrack = (index, remainingGuests, currentCombination, currentWaste) => {
-//     if (remainingGuests <= 0) {
-//       if (
-//         currentWaste < minWaste || // Less waste
-//         (currentWaste === minWaste && currentCombination.length < minTables) // Fewer tables
-//       ) {
-//         minWaste = currentWaste;
-//         minTables = currentCombination.length;
-//         bestCombination = [...currentCombination];
-//       }
-//       return;
-//     }
-
-//     for (let i = index; i < availableTables.length; i++) {
-//       if (availableTables[i].seats > remainingGuests) continue; // Skip tables that are too large
-
-//       // Allocate the table
-//       currentCombination.push(availableTables[i].tableId);
-//       backtrack(
-//         i, // Allow reusing the same table type
-//         remainingGuests - availableTables[i].seats,
-//         currentCombination,
-//         currentWaste + (availableTables[i].seats - remainingGuests)
-//       );
-//       currentCombination.pop(); // Backtrack
-//     }
-//   };
-
-//   // Start the search
-//   backtrack(0, guests, [], 0);
-
-//   return bestCombination;
-// }; 
