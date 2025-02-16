@@ -14,6 +14,11 @@ const tableSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  locationId: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'TableLocation',
+    required: false, 
+  },
 });
 
 const Table = mongoose.model('Table', tableSchema);
