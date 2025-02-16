@@ -1,24 +1,6 @@
 import React from "react";
 
-const tables = [
-  { tableId: "T1", seats: 3, canCombine: true, description: "Outside" },
-  { tableId: "T2", seats: 3, canCombine: true, description: "Near window" },
-  { tableId: "T3", seats: 3, canCombine: true },
-  { tableId: "T4", seats: 3, canCombine: true, description: "Near bar" },
-  { tableId: "T5", seats: 3, canCombine: true },
-  { tableId: "T6", seats: 4, canCombine: true, description: "Outside" },
-  { tableId: "T7", seats: 4, canCombine: true, description: "Near window" },
-  { tableId: "T8", seats: 4, canCombine: true },
-  { tableId: "T9", seats: 4, canCombine: true, description: "Near kitchen" },
-  { tableId: "T10", seats: 4, canCombine: true },
-  { tableId: "T11", seats: 10, canCombine: true, description: "Private room" },
-  { tableId: "T12", seats: 10, canCombine: true },
-  { tableId: "T13", seats: 10, canCombine: true, description: "Outdoor patio" },
-  { tableId: "T14", seats: 10, canCombine: true },
-  { tableId: "T15", seats: 10, canCombine: true, description: "Mezzanine" },
-];
-
-export default function TableSelectionStep({ selectedTables, setSelectedTables, TOTAL_GUESTS }) {
+export default function TableSelectionStep({ selectedTables, setSelectedTables, TOTAL_GUESTS, tables }) {
   const groupedTables = React.useMemo(() => {
     const groups = {};
     tables.forEach((table) => {
@@ -29,7 +11,7 @@ export default function TableSelectionStep({ selectedTables, setSelectedTables, 
       groups[key].push(table);
     });
     return groups;
-  }, []);
+  }, [tables]);
 
   const handleTableSelection = (tableId) => {
     setSelectedTables((prev) =>
