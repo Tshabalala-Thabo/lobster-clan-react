@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import reservationRoutes from './routes/reservationRoutes.js';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 connectDB();
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 
 // Welcome Route
