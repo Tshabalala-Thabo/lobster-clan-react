@@ -1,10 +1,11 @@
 import express from 'express';
-import { checkAvailability } from '../controllers/reservationController.js';
+import { submitReservation, checkAvailability } from '../controllers/reservationController.js';
 
 const router = express.Router();
 
-//router.post('/reserve', createReservation);
 router.post('/check-availability', checkAvailability);
+router.post('/submit-reservation', submitReservation);
+
 
 
 export default router; 

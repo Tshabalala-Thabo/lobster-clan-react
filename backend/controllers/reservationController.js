@@ -65,3 +65,63 @@ export const checkAvailability = async (req, res) => {
     });
   }
 };
+
+export const submitReservation = async (req, res) => {
+  const { name, email, phone, guests, date, duration, selectedTables } = req.body;
+
+  // Validate the payload
+  if (!name || !email || !phone || !guests || !date || !duration || !selectedTables) {
+    return res.status(400).json({
+      success: false,
+      message: 'All fields are required.',
+    });
+  }
+
+  // Convert the date to start and end times
+  const startTime = new Date(date);
+  const endTime = new Date(startTime.getTime() + duration * 60000); // Convert duration to milliseconds
+
+  try {
+    // Check if the selected tables are available
+    const overlappingReservations = await Reservation.find({
+      tableIds: { $in: selectedTables },
+      $or: [
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } },
+        { startTime: { $gte: startTime, $lt: endTime } },
+      ],
+    }).exec();
+
+    if (overlappingReservations.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'One or more selected tables are already reserved for the given time slot.',
+      });
+    }
+
+    // Create a new reservation
+    const newReservation = new Reservation({
+      name,
+      email,
+      phone,
+      guests,
+      startTime,
+      endTime,
+      tableIds: selectedTables,
+    });
+
+    // Save the reservation to the database
+    await newReservation.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Reservation submitted successfully!',
+      reservation: newReservation,
+    });
+  } catch (error) {
+    console.error('Error submitting reservation:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
