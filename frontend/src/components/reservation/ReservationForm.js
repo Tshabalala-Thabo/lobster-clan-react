@@ -20,7 +20,6 @@ export default function ReservationForm({ onReservationSuccess }) {
     }
   });
   const [currentStep, setCurrentStep] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [startTime, setStartTime] = useState(null);
   const [duration, setDuration] = useState(30);
@@ -28,7 +27,13 @@ export default function ReservationForm({ onReservationSuccess }) {
   const [personalDetails, setPersonalDetails] = useState(null);
   const [availableTables, setAvailableTables] = useState([]);
 
-  const { loading: checkingAvailability, error: availabilityError, checkAvailability } = useReservation();
+  const {
+    loading: checkingAvailability,
+    error: availabilityError,
+    checkAvailability,
+    submitReservation,
+    loading: submittingReservation, // Loading state for reservation submission
+  } = useReservation();
 
   // Watch the "guests" field from the form
   const guests = methods.watch("guests");
@@ -53,13 +58,48 @@ export default function ReservationForm({ onReservationSuccess }) {
           date: selectedDate,
           duration
         });
-
+  
         if (result.success) {
           setAvailableTables(result.availableTables); // Store available tables
           setCurrentStep(3); // Proceed to the next step
         } else {
           toast.error(result.message || 'Failed to check availability');
-          console.log("result message ", result)
+          console.log("result message ", result);
+        }
+      }
+      else if (currentStep === 4) {
+        // Handle reservation confirmation
+        try {
+          // Combine date and time into a single value
+          const reservationStart = new Date(selectedDate);
+          reservationStart.setHours(startTime.getHours(), startTime.getMinutes());
+  
+          // Prepare the reservation data
+          const reservationData = {
+            name: personalDetails?.name || methods.getValues().name,
+            email: personalDetails?.email || methods.getValues().email,
+            phone: personalDetails?.phone || methods.getValues().phone,
+            guests: personalDetails?.guests || methods.getValues().guests,
+            date: reservationStart.toISOString(), // Use the combined date and time
+            duration,
+            selectedTables,
+          };
+  
+          console.log("Reservation Data:", reservationData);
+  
+          // Submit the reservation
+          const result = await submitReservation(reservationData);
+  
+          if (result.success) {
+            console.log("Reservation confirmed:", result.message);
+            setCurrentStep(5); // Move to the success step
+          } else {
+            console.error("Failed to confirm reservation:", result.error);
+            toast.error(result.error || "Failed to confirm reservation");
+          }
+        } catch (error) {
+          console.error("Error submitting reservation:", error);
+          toast.error("An error occurred while submitting the reservation.");
         }
       }
       else {
@@ -71,28 +111,43 @@ export default function ReservationForm({ onReservationSuccess }) {
   };
 
   const onSubmit = async (data) => {
-    if (currentStep < 5) {
-      setLoading(true);
-      setTimeout(() => {
-        handleStepChange('next');
-        setLoading(false);
-      }, 2000);
-    } else {
-      // Combine date and time into a single value
-      const reservationStart = new Date(selectedDate);
-      reservationStart.setHours(startTime.getHours(), startTime.getMinutes());
+    if (currentStep < 4) {
+      // Proceed to the next step
+      handleStepChange('next');
+    } else if (currentStep === 4) {
+      // Handle reservation confirmation
+      try {
+        // Combine date and time into a single value
+        const reservationStart = new Date(selectedDate);
+        reservationStart.setHours(startTime.getHours(), startTime.getMinutes());
 
-      // Prepare the reservation data
-      const reservationData = {
-        personalDetails: personalDetails || methods.getValues(),
-        date: reservationStart.toISOString(), // Use the combined date and time
-        duration,
-        selectedTables,
-      };
+        // Prepare the reservation data
+        const reservationData = {
+          name: personalDetails?.name || data.name,
+          email: personalDetails?.email || data.email,
+          phone: personalDetails?.phone || data.phone,
+          guests: personalDetails?.guests || data.guests,
+          date: reservationStart.toISOString(), // Use the combined date and time
+          duration,
+          selectedTables,
+        };
 
-      console.log("Reservation Data:", reservationData);
-      toast.success("Reservation confirmed!");
-      onReservationSuccess(true);
+        console.log("Reservation Data:", reservationData);
+
+        // Submit the reservation
+        const result = await submitReservation(reservationData);
+
+        if (result.success) {
+          console.log("Reservation confirmed:", result.message);
+          setCurrentStep(5); // Move to the success step
+        } else {
+          console.error("Failed to confirm reservation:", result.error);
+          toast.error(result.error || "Failed to confirm reservation");
+        }
+      } catch (error) {
+        console.error("Error submitting reservation:", error);
+        toast.error("An error occurred while submitting the reservation.");
+      }
     }
   };
 
@@ -121,13 +176,13 @@ export default function ReservationForm({ onReservationSuccess }) {
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
-        {(loading || checkingAvailability) && (
+        {(checkingAvailability || submittingReservation) && (
           <div className="flex justify-center items-center">
             <Oval type="Oval" color="#ff0000" height={50} width={50} />
           </div>
         )}
-        {!loading && !checkingAvailability && currentStep === 1 && <PersonalDetailsStep />}
-        {!loading && !checkingAvailability && currentStep === 2 && (
+        {!checkingAvailability && !submittingReservation && currentStep === 1 && <PersonalDetailsStep />}
+        {!checkingAvailability && !submittingReservation && currentStep === 2 && (
           <DateTimeStep
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
@@ -137,7 +192,7 @@ export default function ReservationForm({ onReservationSuccess }) {
             setDuration={setDuration}
           />
         )}
-        {!loading && !checkingAvailability && currentStep === 3 && (
+        {!checkingAvailability && !submittingReservation && currentStep === 3 && (
           <TableSelectionStep
             selectedTables={selectedTables}
             setSelectedTables={setSelectedTables}
@@ -145,16 +200,17 @@ export default function ReservationForm({ onReservationSuccess }) {
             tables={availableTables} // Use available tables from state
           />
         )}
-        {!loading && !checkingAvailability && currentStep === 4 && (
+        {!checkingAvailability && !submittingReservation && currentStep === 4 && (
           <ConfirmationStep
             selectedDate={selectedDate}
             startTime={startTime}
             duration={duration}
             selectedTables={selectedTables}
             personalDetails={personalDetails || methods.getValues()}
+            availableTables={availableTables}
           />
         )}
-        {!loading && !checkingAvailability && currentStep === 5 && (
+        {!checkingAvailability && !submittingReservation && currentStep === 5 && (
           <SuccessStep
             selectedDate={selectedDate}
             startTime={startTime}
@@ -164,7 +220,7 @@ export default function ReservationForm({ onReservationSuccess }) {
             onReset={handleReset}
           />
         )}
-        {currentStep < 5 && !loading && !checkingAvailability && (
+        {currentStep < 5 && !checkingAvailability && !submittingReservation && (
           <FormActions
             currentStep={currentStep}
             totalSteps={5}
@@ -177,7 +233,7 @@ export default function ReservationForm({ onReservationSuccess }) {
         )}
         {availabilityError && (
           <div className="text-red-500 text-center mt-2">
-            {availabilityError} (errrr)
+            {availabilityError}
           </div>
         )}
       </form>

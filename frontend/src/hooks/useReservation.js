@@ -8,7 +8,7 @@ const useReservation = () => {
   const checkAvailability = async ({ guests, date, duration }) => {
     setLoading(true);
     setError(null);
-  
+
     try {
       const response = await api.post('/check-availability', {
         guests,
@@ -22,7 +22,7 @@ const useReservation = () => {
       if (response.status < 200 || response.status >= 300) {
         throw new Error(data.message);
       }
-  
+
       setLoading(false);
       return { success: data.success, message: data.message, availableTables: data.availableTables };
     } catch (err) {
@@ -32,10 +32,42 @@ const useReservation = () => {
     }
   };
 
+  const submitReservation = async ({ name, email, phone, guests, date, duration, selectedTables }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.post('/submit-reservation', {
+        name,
+        email,
+        phone,
+        guests,
+        date,
+        duration,
+        selectedTables,
+      });
+      const data = response.data;
+      console.log("Reservation submitted successfully:", data);
+
+      // Check if the response status is not in the range 200-299
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(data.message);
+      }
+
+      setLoading(false);
+      return { success: true, message: data.message };
+    } catch (err) {
+      setError(err.message || 'Failed to submit reservation');
+      setLoading(false);
+      return { success: false, error: err.message };
+    }
+  };
+
   return {
     loading,
     error,
     checkAvailability,
+    submitReservation, // Add the new method to the returned object
   };
 };
 

@@ -1,8 +1,7 @@
-// components/ConfirmationStep.js
 import React from "react";
 import { useFormContext } from "react-hook-form";
 
-export default function ConfirmationStep({ selectedDate, startTime, duration, selectedTables }) {
+export default function ConfirmationStep({ selectedDate, startTime, duration, selectedTables, availableTables = [] }) {
   const { watch } = useFormContext(); // Use useFormContext to access form data
 
   // Get form values
@@ -36,10 +35,10 @@ export default function ConfirmationStep({ selectedDate, startTime, duration, se
         {selectedTables.length > 0 ? (
           <ul>
             {selectedTables.map((tableId) => {
-              const table = tables.find((t) => t.tableId === tableId);
+              const table = availableTables.find((t) => t.tableId === tableId);
               return (
                 <li key={tableId}>
-                  Table {table.tableId} ({table.seats} seats) - {table.description || "No description"}
+                  Table {table?.tableId} ({table?.seats} seats) - {table?.location || "No location"}
                 </li>
               );
             })}
@@ -51,22 +50,3 @@ export default function ConfirmationStep({ selectedDate, startTime, duration, se
     </div>
   );
 }
-
-// Mock tables data (move this to a shared file if needed)
-const tables = [
-  { tableId: "T1", seats: 3, canCombine: true, description: "Outside" },
-  { tableId: "T2", seats: 3, canCombine: true, description: "Near window" },
-  { tableId: "T3", seats: 3, canCombine: true },
-  { tableId: "T4", seats: 3, canCombine: true, description: "Near bar" },
-  { tableId: "T5", seats: 3, canCombine: true },
-  { tableId: "T6", seats: 4, canCombine: true, description: "Outside" },
-  { tableId: "T7", seats: 4, canCombine: true, description: "Near window" },
-  { tableId: "T8", seats: 4, canCombine: true },
-  { tableId: "T9", seats: 4, canCombine: true, description: "Near kitchen" },
-  { tableId: "T10", seats: 4, canCombine: true },
-  { tableId: "T11", seats: 10, canCombine: true, description: "Private room" },
-  { tableId: "T12", seats: 10, canCombine: true },
-  { tableId: "T13", seats: 10, canCombine: true, description: "Outdoor patio" },
-  { tableId: "T14", seats: 10, canCombine: true },
-  { tableId: "T15", seats: 10, canCombine: true, description: "Mezzanine" },
-];
