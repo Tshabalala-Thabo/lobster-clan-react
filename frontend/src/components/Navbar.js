@@ -22,7 +22,7 @@ export function Navbar({ show }) {
               className="rounded-none px-2 text-md font-regular py-1" 
               variant="destructive" 
               size="sm"
-              onClick={openBookingModal}
+              onClick={() => window.location.href = '/reserve'}
             >
               Book a table
             </Button>
