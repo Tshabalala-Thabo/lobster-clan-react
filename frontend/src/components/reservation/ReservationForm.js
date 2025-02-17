@@ -32,7 +32,8 @@ export default function ReservationForm({ onReservationSuccess }) {
     error: availabilityError,
     checkAvailability,
     submitReservation,
-    loading: submittingReservation, // Loading state for reservation submission
+    checkTimeSlots, // Add this
+    loading: submittingReservation,
   } = useReservation();
 
   // Watch the "guests" field from the form
@@ -41,15 +42,24 @@ export default function ReservationForm({ onReservationSuccess }) {
   const handleStepChange = async (direction) => {
     if (direction === 'next') {
       if (currentStep === 1) {
-        // Store personal details when moving from step 1
         const formData = methods.getValues();
-        setPersonalDetails({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          guests: formData.guests
+        
+        // Check available time slots before proceeding
+        const timeSlotResult = await checkTimeSlots({
+          guests: formData.guests,
         });
-        setCurrentStep(2);
+
+        if (timeSlotResult.success) {
+          setPersonalDetails({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            guests: formData.guests
+          });
+          setCurrentStep(2);
+        } else {
+          toast.error(timeSlotResult.error || 'Failed to fetch available time slots');
+        }
       }
       else if (currentStep === 2) {
         // Check availability before proceeding to table selection

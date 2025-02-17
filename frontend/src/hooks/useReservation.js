@@ -63,11 +63,36 @@ const useReservation = () => {
     }
   };
 
+  const checkTimeSlots = async ({ guests, date }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.post('/check-time-slots', {
+        guests,
+      });
+      const data = response.data;
+      console.log("Time slots data from backend:", data);
+
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(data.message);
+      }
+
+      setLoading(false);
+      return { success: true, timeSlots: data.timeSlots, message: data.message };
+    } catch (err) {
+      setError(err.message || 'Failed to fetch available time slots');
+      setLoading(false);
+      return { success: false, error: err.message };
+    }
+  };
+
   return {
     loading,
     error,
     checkAvailability,
-    submitReservation, // Add the new method to the returned object
+    submitReservation,
+    checkTimeSlots, // Add the new method to the returned object
   };
 };
 
