@@ -13,8 +13,7 @@ export const checkAvailability = async (req, res) => {
     // Find all reservations that overlap with the requested time slot
     const overlappingReservations = await Reservation.find({
       $or: [
-        { startTime: { $lt: endTime }, endTime: { $gt: startTime } },
-        { startTime: { $gte: startTime, $lt: endTime } },
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }, // Overlapping reservations
       ],
     }).exec();
 
@@ -68,33 +67,33 @@ export const checkAvailability = async (req, res) => {
 
 export const checkTimeSlots = async (req, res) => {
   const { guests } = req.body;
-  
+
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const sevenDaysFromNow = new Date(today);
     sevenDaysFromNow.setDate(today.getDate() + 7);
-    
+
     const reservations = await Reservation.find({
       startTime: { $gte: today, $lt: sevenDaysFromNow }
     }).sort({ startTime: 1 });
 
     const allTables = await Table.find({});
     const availabilityRanges = [];
-    
+
     for (let d = 0; d < 7; d++) {
       const currentDate = new Date(today);
       currentDate.setDate(today.getDate() + d);
-      
+
       const openingTime = new Date(currentDate.setHours(11, 0, 0));
       const closingTime = new Date(currentDate.setHours(22, 0, 0));
-      
+
       const dayReservations = reservations.filter(res => {
         const resDate = new Date(res.startTime);
         return resDate.getDate() === currentDate.getDate() &&
-               resDate.getMonth() === currentDate.getMonth() &&
-               resDate.getFullYear() === currentDate.getFullYear();
+          resDate.getMonth() === currentDate.getMonth() &&
+          resDate.getFullYear() === currentDate.getFullYear();
       });
 
       let unavailableSlots = [];
@@ -102,10 +101,10 @@ export const checkTimeSlots = async (req, res) => {
 
       while (currentTime < closingTime) {
         const slotEnd = new Date(currentTime.getTime() + 30 * 60000);
-        
+
         const conflictingReservations = dayReservations.filter(res => {
-          return (currentTime < new Date(res.endTime) && 
-                  slotEnd > new Date(res.startTime));
+          return (currentTime < new Date(res.endTime) &&
+            slotEnd > new Date(res.startTime));
         });
 
         const reservedTables = new Set(conflictingReservations.flatMap(res => res.tableIds));
@@ -127,7 +126,7 @@ export const checkTimeSlots = async (req, res) => {
       // Merge consecutive unavailable slots
       const mergedSlots = unavailableSlots.reduce((merged, current) => {
         if (merged.length === 0) return [current];
-        
+
         const last = merged[merged.length - 1];
         if (last.endTime.getTime() === current.startTime.getTime()) {
           last.endTime = current.endTime;
@@ -135,7 +134,7 @@ export const checkTimeSlots = async (req, res) => {
           last.reservedTables = [...new Set([...last.reservedTables, ...current.reservedTables])];
           return merged;
         }
-        
+
         return [...merged, current];
       }, []);
 
@@ -183,8 +182,7 @@ export const submitReservation = async (req, res) => {
     const overlappingReservations = await Reservation.find({
       tableIds: { $in: selectedTables },
       $or: [
-        { startTime: { $lt: endTime }, endTime: { $gt: startTime } },
-        { startTime: { $gte: startTime, $lt: endTime } },
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }, // Overlapping reservations
       ],
     }).exec();
 
