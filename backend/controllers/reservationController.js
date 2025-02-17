@@ -66,6 +66,103 @@ export const checkAvailability = async (req, res) => {
   }
 };
 
+export const checkTimeSlots = async (req, res) => {
+  const { guests } = req.body;
+  
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const sevenDaysFromNow = new Date(today);
+    sevenDaysFromNow.setDate(today.getDate() + 7);
+    
+    const reservations = await Reservation.find({
+      startTime: { $gte: today, $lt: sevenDaysFromNow }
+    }).sort({ startTime: 1 });
+
+    const allTables = await Table.find({});
+    const availabilityRanges = [];
+    
+    for (let d = 0; d < 7; d++) {
+      const currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + d);
+      
+      const openingTime = new Date(currentDate.setHours(11, 0, 0));
+      const closingTime = new Date(currentDate.setHours(22, 0, 0));
+      
+      const dayReservations = reservations.filter(res => {
+        const resDate = new Date(res.startTime);
+        return resDate.getDate() === currentDate.getDate() &&
+               resDate.getMonth() === currentDate.getMonth() &&
+               resDate.getFullYear() === currentDate.getFullYear();
+      });
+
+      let unavailableSlots = [];
+      let currentTime = new Date(openingTime);
+
+      while (currentTime < closingTime) {
+        const slotEnd = new Date(currentTime.getTime() + 30 * 60000);
+        
+        const conflictingReservations = dayReservations.filter(res => {
+          return (currentTime < new Date(res.endTime) && 
+                  slotEnd > new Date(res.startTime));
+        });
+
+        const reservedTables = new Set(conflictingReservations.flatMap(res => res.tableIds));
+        const availableTables = allTables.filter(table => !reservedTables.has(table.tableId));
+        const availableSeats = availableTables.reduce((sum, table) => sum + table.seats, 0);
+
+        if (availableSeats < guests) {
+          unavailableSlots.push({
+            startTime: new Date(currentTime),
+            endTime: new Date(slotEnd),
+            availableSeats,
+            reservedTables: Array.from(reservedTables)
+          });
+        }
+
+        currentTime = slotEnd;
+      }
+
+      // Merge consecutive unavailable slots
+      const mergedSlots = unavailableSlots.reduce((merged, current) => {
+        if (merged.length === 0) return [current];
+        
+        const last = merged[merged.length - 1];
+        if (last.endTime.getTime() === current.startTime.getTime()) {
+          last.endTime = current.endTime;
+          last.availableSeats = Math.min(last.availableSeats, current.availableSeats);
+          last.reservedTables = [...new Set([...last.reservedTables, ...current.reservedTables])];
+          return merged;
+        }
+        
+        return [...merged, current];
+      }, []);
+
+      if (mergedSlots.length > 0) {
+        availabilityRanges.push({
+          date: new Date(currentDate),
+          unavailableSlots: mergedSlots
+        });
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      unavailableRanges: availabilityRanges,
+      requiredGuests: guests
+    });
+
+  } catch (error) {
+    console.error('Error checking time slots:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+};
+
 export const submitReservation = async (req, res) => {
   const { name, email, phone, guests, date, duration, selectedTables } = req.body;
 
