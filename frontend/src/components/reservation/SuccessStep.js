@@ -51,11 +51,11 @@ export default function SuccessStep({ selectedDate, startTime, duration, selecte
           <h3 className="font-semibold mb-2">Selected Tables</h3>
           {selectedTables.length > 0 ? (
             <ul>
-              {selectedTables.map((tableId) => {
-                const table = tables.find((t) => t.tableId === tableId);
+              {selectedTables.map((tableName) => {
+                const table = tables.find((t) => t.tableName === tableName);
                 return (
-                  <li key={tableId}>
-                    Table {table.tableId} ({table.seats} seats) - {table.description || "No description"}
+                  <li key={tableName}>
+                    Table {table.tableName} ({table.seats} seats) - {table.description || "No description"}
                   </li>
                 );
               })}
@@ -87,19 +87,19 @@ export default function SuccessStep({ selectedDate, startTime, duration, selecte
 
 // Mock tables data (move this to a shared file if needed)
 const tables = [
-  { tableId: "T1", seats: 3, canCombine: true, description: "Outside" },
-  { tableId: "T2", seats: 3, canCombine: true, description: "Near window" },
-  { tableId: "T3", seats: 3, canCombine: true },
-  { tableId: "T4", seats: 3, canCombine: true, description: "Near bar" },
-  { tableId: "T5", seats: 3, canCombine: true },
-  { tableId: "T6", seats: 4, canCombine: true, description: "Outside" },
-  { tableId: "T7", seats: 4, canCombine: true, description: "Near window" },
-  { tableId: "T8", seats: 4, canCombine: true },
-  { tableId: "T9", seats: 4, canCombine: true, description: "Near kitchen" },
-  { tableId: "T10", seats: 4, canCombine: true },
-  { tableId: "T11", seats: 10, canCombine: true, description: "Private room" },
-  { tableId: "T12", seats: 10, canCombine: true },
-  { tableId: "T13", seats: 10, canCombine: true, description: "Outdoor patio" },
-  { tableId: "T14", seats: 10, canCombine: true },
-  { tableId: "T15", seats: 10, canCombine: true, description: "Mezzanine" },
+  { tableName: "T1", seats: 3, canCombine: true, description: "Outside" },
+  { tableName: "T2", seats: 3, canCombine: true, description: "Near window" },
+  { tableName: "T3", seats: 3, canCombine: true },
+  { tableName: "T4", seats: 3, canCombine: true, description: "Near bar" },
+  { tableName: "T5", seats: 3, canCombine: true },
+  { tableName: "T6", seats: 4, canCombine: true, description: "Outside" },
+  { tableName: "T7", seats: 4, canCombine: true, description: "Near window" },
+  { tableName: "T8", seats: 4, canCombine: true },
+  { tableName: "T9", seats: 4, canCombine: true, description: "Near kitchen" },
+  { tableName: "T10", seats: 4, canCombine: true },
+  { tableName: "T11", seats: 10, canCombine: true, description: "Private room" },
+  { tableName: "T12", seats: 10, canCombine: true },
+  { tableName: "T13", seats: 10, canCombine: true, description: "Outdoor patio" },
+  { tableName: "T14", seats: 10, canCombine: true },
+  { tableName: "T15", seats: 10, canCombine: true, description: "Mezzanine" },
 ];

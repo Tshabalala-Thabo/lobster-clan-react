@@ -173,8 +173,8 @@ export default function ReservationForm({ onReservationSuccess }) {
   };
 
   // Calculate total seats from selected tables
-  const totalSeats = selectedTables.reduce((sum, tableId) => {
-    const table = availableTables.find(t => t.tableId === tableId);
+  const totalSeats = selectedTables.reduce((sum, tableName) => {
+    const table = availableTables.find(t => t.tableName === tableName);
     return sum + (table ? table.seats : 0);
   }, 0);
 

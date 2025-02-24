@@ -32,15 +32,15 @@ export default function TableSelectionStep({ selectedTables, setSelectedTables, 
   }, [tables]);
 
   // Handle table selection
-  const handleTableSelection = (tableId) => {
+  const handleTableSelection = (tableName) => {
     setSelectedTables((prev) =>
-      prev.includes(tableId) ? prev.filter((id) => id !== tableId) : [...prev, tableId]
+      prev.includes(tableName) ? prev.filter((id) => id !== tableName) : [...prev, tableName]
     );
   };
 
   // Calculate total seats from selected tables
-  const totalSeats = selectedTables.reduce((sum, tableId) => {
-    const table = tables.find((t) => t.tableId === tableId);
+  const totalSeats = selectedTables.reduce((sum, tableName) => {
+    const table = tables.find((t) => t.tableName === tableName);
     return sum + (table ? table.seats : 0);
   }, 0);
 
@@ -65,17 +65,17 @@ export default function TableSelectionStep({ selectedTables, setSelectedTables, 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {tables.map((table) => (
                   <label
-                    key={table.tableId}
+                    key={table.tableName}
                     className="flex items-center gap-2 cursor-pointer"
                   >
                     <input
                       type="checkbox"
-                      checked={selectedTables.includes(table.tableId)}
-                      onChange={() => handleTableSelection(table.tableId)}
+                      checked={selectedTables.includes(table.tableName)}
+                      onChange={() => handleTableSelection(table.tableName)}
                       className="h-4 w-4"
                     />
                     <span>
-                      Table {table.tableId} ({table.seats} seats)
+                      Table {table.tableName} ({table.seats} seats)
                     </span>
                   </label>
                 ))}

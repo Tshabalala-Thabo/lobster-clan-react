@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const tableSchema = new mongoose.Schema({
-  tableId: {
+  tableName: {
     type: String,
     required: true,
     unique: true,

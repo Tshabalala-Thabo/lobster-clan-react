@@ -1,29 +1,28 @@
 import Reservation from '../models/Reservation.js';
 import Table from '../models/Table.js';
-import TableLocation from '../models/TableLocation.js'; // Import the TableLocation model
+import sendReservationConfirmation from '../utils/emailService.js';
+import TableLocation from '../models/TableLocation.js';
 
 export const checkAvailability = async (req, res) => {
   const { guests, date, duration } = req.body;
-
-  // Convert the time to start and end times
   const startTime = new Date(date);
-  const endTime = new Date(startTime.getTime() + duration * 60000); // Convert duration to milliseconds
+  const endTime = new Date(startTime.getTime() + duration * 60000); 
 
   try {
     // Find all reservations that overlap with the requested time slot
     const overlappingReservations = await Reservation.find({
       $or: [
-        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }, // Overlapping reservations
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } },
       ],
     }).exec();
 
-    // Get the tableIds that are reserved during the requested time slot
-    const reservedTableIds = overlappingReservations.flatMap((reservation) => reservation.tableIds);
+    // Get the tableNames that are reserved during the requested time slot
+    const reservedTableIds = overlappingReservations.flatMap((reservation) => reservation.tableNames);
 
     // Find all tables that are not reserved during the requested time slot
     // Populate the locationId field to get the location details
     const availableTables = await Table.find({
-      tableId: { $nin: reservedTableIds },
+      tableName: { $nin: reservedTableIds },
     })
       .populate('locationId') // Populate the location details
       .exec();
@@ -31,7 +30,7 @@ export const checkAvailability = async (req, res) => {
     // Combine each table with its location name
     const tablesWithLocations = availableTables.map((table) => {
       return {
-        tableId: table.tableId,
+        tableName: table.tableName,
         seats: table.seats,
         canCombine: table.canCombine,
         location: table.locationId ? table.locationId.name : 'Other', // Add location name
@@ -107,8 +106,8 @@ export const checkTimeSlots = async (req, res) => {
             slotEnd > new Date(res.startTime));
         });
 
-        const reservedTables = new Set(conflictingReservations.flatMap(res => res.tableIds));
-        const availableTables = allTables.filter(table => !reservedTables.has(table.tableId));
+        const reservedTables = new Set(conflictingReservations.flatMap(res => res.tableNames));
+        const availableTables = allTables.filter(table => !reservedTables.has(table.tableName));
         const availableSeats = availableTables.reduce((sum, table) => sum + table.seats, 0);
 
         if (availableSeats < guests) {
@@ -180,7 +179,7 @@ export const submitReservation = async (req, res) => {
   try {
     // Check if the selected tables are available
     const overlappingReservations = await Reservation.find({
-      tableIds: { $in: selectedTables },
+      tableNames: { $in: selectedTables },
       $or: [
         { startTime: { $lt: endTime }, endTime: { $gt: startTime } }, // Overlapping reservations
       ],
@@ -193,6 +192,18 @@ export const submitReservation = async (req, res) => {
       });
     }
 
+    // Fetch details of the selected tables
+    const tables = await Table.find({ tableName: { $in: selectedTables } })
+      .populate('locationId') // Populate location details
+      .exec();
+
+    // Format table details for the email
+    const tableDetails = tables.map((table) => ({
+      tableName: table.tableName,
+      seats: table.seats,
+      location: table.locationId ? table.locationId.name : 'Other', // Add location name
+    }));
+
     // Create a new reservation
     const newReservation = new Reservation({
       name,
@@ -201,11 +212,21 @@ export const submitReservation = async (req, res) => {
       guests,
       startTime,
       endTime,
-      tableIds: selectedTables,
+      tableNames: selectedTables,
     });
 
     // Save the reservation to the database
     await newReservation.save();
+
+    // Send a confirmation email to the user
+    await sendReservationConfirmation({
+      name,
+      email,
+      guests,
+      duration,
+      date: startTime,
+      tables: tableDetails, // Pass table details to the email
+    });
 
     res.status(201).json({
       success: true,

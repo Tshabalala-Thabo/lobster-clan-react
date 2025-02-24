@@ -34,11 +34,11 @@ export default function ConfirmationStep({ selectedDate, startTime, duration, se
         <h3 className="font-semibold mb-2">Selected Tables</h3>
         {selectedTables.length > 0 ? (
           <ul>
-            {selectedTables.map((tableId) => {
-              const table = availableTables.find((t) => t.tableId === tableId);
+            {selectedTables.map((tableName) => {
+              const table = availableTables.find((t) => t.tableName === tableName);
               return (
-                <li key={tableId}>
-                  Table {table?.tableId} ({table?.seats} seats) - {table?.location || "No location"}
+                <li key={tableName}>
+                  Table {table?.tableName} ({table?.seats} seats) - {table?.location || "No location"}
                 </li>
               );
             })}
