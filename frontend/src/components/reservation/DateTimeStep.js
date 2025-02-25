@@ -8,13 +8,16 @@ export default function DateTimeStep({ selectedDate, setSelectedDate, startTime,
         formState: { errors },
     } = useFormContext();
 
-    // Function to generate the next 7 days starting from today
+    // Updated function to generate the next 7 days
     const getNext7Days = () => {
         const days = [];
         const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time part to midnight
+        
         for (let i = 0; i < 7; i++) {
-            const date = new Date(today);
+            const date = new Date();
             date.setDate(today.getDate() + i);
+            date.setHours(0, 0, 0, 0); // Reset time part for each date
             days.push(date);
         }
         return days;
@@ -63,10 +66,12 @@ export default function DateTimeStep({ selectedDate, setSelectedDate, startTime,
                         <select
                             value={selectedDate ? selectedDate.toISOString() : ""}
                             onChange={(e) => {
-                                const date = new Date(e.target.value);
-                                setSelectedDate(date);
-                                field.onChange(date);
-                                setStartTime(null); // Reset start time when date changes
+                                const selectedDateStr = e.target.value;
+                                const newDate = new Date(selectedDateStr);
+                                newDate.setHours(0, 0, 0, 0); // Reset time part
+                                setSelectedDate(newDate);
+                                field.onChange(newDate);
+                                setStartTime(null);
                             }}
                             className="w-full px-3 py-2 border border-stone-300 focus:outline-none focus:ring-2 focus:ring-red-500"
                         >
@@ -74,7 +79,10 @@ export default function DateTimeStep({ selectedDate, setSelectedDate, startTime,
                                 Select a date
                             </option>
                             {next7Days.map((date, index) => (
-                                <option key={index} value={date.toISOString()}>
+                                <option 
+                                    key={date.toISOString()} 
+                                    value={date.toISOString()}
+                                >
                                     {date.toLocaleDateString("en-US", {
                                         weekday: "long",
                                         year: "numeric",
