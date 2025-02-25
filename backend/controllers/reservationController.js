@@ -16,20 +16,20 @@ export const checkAvailability = async (req, res) => {
       ],
     }).exec();
 
-    // Get the tableNames that are reserved during the requested time slot
-    const reservedTableIds = overlappingReservations.flatMap((reservation) => reservation.tableNames);
+    // Get the tableIds that are reserved during the requested time slot
+    const reservedTableIds = overlappingReservations.flatMap((reservation) => reservation.tableIds);
 
     // Find all tables that are not reserved during the requested time slot
-    // Populate the locationId field to get the location details
     const availableTables = await Table.find({
-      tableName: { $nin: reservedTableIds },
+      _id: { $nin: reservedTableIds },
     })
-      .populate('locationId') // Populate the location details
+      .populate('locationId')
       .exec();
 
     // Combine each table with its location name
     const tablesWithLocations = availableTables.map((table) => {
       return {
+        id: table._id,
         tableName: table.tableName,
         seats: table.seats,
         canCombine: table.canCombine,
@@ -106,8 +106,8 @@ export const checkTimeSlots = async (req, res) => {
             slotEnd > new Date(res.startTime));
         });
 
-        const reservedTables = new Set(conflictingReservations.flatMap(res => res.tableNames));
-        const availableTables = allTables.filter(table => !reservedTables.has(table.tableName));
+        const reservedTables = new Set(conflictingReservations.flatMap(res => res.tableIds));
+        const availableTables = allTables.filter(table => !reservedTables.has(table._id.toString()));
         const availableSeats = availableTables.reduce((sum, table) => sum + table.seats, 0);
 
         if (availableSeats < guests) {
@@ -179,9 +179,9 @@ export const submitReservation = async (req, res) => {
   try {
     // Check if the selected tables are available
     const overlappingReservations = await Reservation.find({
-      tableNames: { $in: selectedTables },
+      tableIds: { $in: selectedTables },
       $or: [
-        { startTime: { $lt: endTime }, endTime: { $gt: startTime } }, // Overlapping reservations
+        { startTime: { $lt: endTime }, endTime: { $gt: startTime } },
       ],
     }).exec();
 
@@ -212,7 +212,7 @@ export const submitReservation = async (req, res) => {
       guests,
       startTime,
       endTime,
-      tableNames: selectedTables,
+      tableIds: selectedTables, // Now using tableIds instead of tableNames
     });
 
     // Save the reservation to the database

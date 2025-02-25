@@ -171,17 +171,15 @@ export default function ReservationForm({ onReservationSuccess }) {
     setCurrentStep(1);
     onReservationSuccess(false);
   };
-
-  // Calculate total seats from selected tables
-  const totalSeats = selectedTables.reduce((sum, tableName) => {
-    const table = availableTables.find(t => t.tableName === tableName);
-    return sum + (table ? table.seats : 0);
+  // Update the totalSeats calculation to use _id
+  const totalSeats = selectedTables.reduce((sum, tableId) => {
+    const table = availableTables.find(t => String(t._id || t.id) === String(tableId));
+    return sum + (table?.seats || 0);
   }, 0);
-
   const isNextDisabled =
     (currentStep === 1 && !methods.formState.isValid) ||
     (currentStep === 2 && (!selectedDate || !startTime || checkingAvailability)) ||
-    (currentStep === 3 && (selectedTables.length === 0 || totalSeats < guests));
+    (currentStep === 3 && (selectedTables.length === 0 || Number(totalSeats) < Number(guests)));
 
   return (
     <FormProvider {...methods}>

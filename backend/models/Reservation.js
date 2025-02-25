@@ -7,7 +7,7 @@ const reservationSchema = new mongoose.Schema({
   startTime: { type: Date, required: true }, 
   endTime: { type: Date, required: true },   
   guests: { type: Number, required: true },
-  tableNames: { type: [String], required: true },
+  tableIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Table', required: true }],
 }, { timestamps: true });
 
 const Reservation = mongoose.model('Reservation', reservationSchema);
