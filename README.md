@@ -23,6 +23,40 @@ A modern restaurant website built with React.js and Node.js, featuring an online
 - **Routing:** React Router
 - **API:** RESTful API
 
+## Data Models
+
+```mermaid
+erDiagram
+    TableLocation ||--o{ Table : "has many"
+    Table ||--o{ Reservation : "assigned to"
+    
+    TableLocation {
+        ObjectId _id
+        String name
+    }
+    
+    Table {
+        ObjectId _id
+        String tableName
+        Number seats
+        Boolean canCombine
+        ObjectId locationId
+    }
+    
+    Reservation {
+        ObjectId _id
+        String name
+        String email
+        String phone
+        Date startTime
+        Date endTime
+        Number guests
+        ObjectId[] tableIds
+        Date createdAt
+        Date updatedAt
+    }
+```
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -115,4 +149,3 @@ lobster-clan-react/
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
